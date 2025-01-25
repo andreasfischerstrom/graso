@@ -8,8 +8,7 @@
   "frontend": "cd frontend && vite",
   "build": "cd frontend && vite build",
   "start": "node backend/server.js"
-}
-,
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
