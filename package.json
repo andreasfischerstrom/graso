@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "backend": "nodemon backend/server.js",
-    "frontend": "vite --cwd frontend",
-    "build": "vite build --cwd frontend",
-    "start": "node backend/server.js"
-  },
+  "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+  "backend": "nodemon backend/server.js",
+  "frontend": "cd frontend && vite",
+  "build": "cd frontend && vite build",
+  "start": "node backend/server.js"
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",
