@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Stock from './components/Stock';
 import Wiki from './components/Wiki';
+import StockWizard from './components/StockWizard';
 
 const App = () => {
   return (
@@ -25,10 +26,10 @@ const App = () => {
         </div>
 
         {/* Main Content */}
-        <div style={{ flex: 1, padding: '20px' }}>
+        <div style={{ flex: 1, padding: '20px', background: '#f0f2f5' }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/stock" element={<Stock />} />
+            <Route path="/stock" element={<StockWizard />} />
             <Route path="/wiki" element={<Wiki />} />
           </Routes>
         </div>
