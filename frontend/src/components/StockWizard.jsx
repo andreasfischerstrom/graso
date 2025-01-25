@@ -6,29 +6,33 @@ const StockWizard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch stock items when the component loads or resets
-const fetchStock = async () => {
-    try {
-        const response = await fetch('/api/stock'); // Relative URL for serverless function
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setItems(data);
-        setCurrentIndex(0);
-        setLoading(false);
-    } catch (error) {
-        console.error('Error fetching stock:', error);
-        setLoading(false);
-    }
-};
+        const fetchStock = async () => {
+            try {
+                console.log('Fetching stock items from /api/stock...');
+                const response = await fetch('/api/stock');
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Stock items fetched:', data);
+
+                setItems(data);
+                setCurrentIndex(0);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching stock:', error);
+                setLoading(false);
+            }
+        };
 
         fetchStock();
     }, []); // Runs once when the component mounts
 
     const updateStock = async (id, level) => {
         try {
+            console.log(`Updating stock for item ${id} to level ${level}...`);
             await fetch(`/api/stock/${id}`, {
                 method: 'POST',
                 headers: {
@@ -46,6 +50,10 @@ const fetchStock = async () => {
 
     if (loading) {
         return <p>Loading stock items...</p>;
+    }
+
+    if (items.length === 0) {
+        return <p>No stock items found!</p>;
     }
 
     if (currentIndex >= items.length) {
