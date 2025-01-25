@@ -7,17 +7,22 @@ const StockWizard = () => {
 
     useEffect(() => {
         // Fetch stock items when the component loads or resets
-        const fetchStock = async () => {
-            try {
-                const response = await fetch('/api/stock');
-                const data = await response.json();
-                setItems(data);
-                setCurrentIndex(0); // Reset to the first item
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching stock:', error);
-            }
-        };
+const fetchStock = async () => {
+    try {
+        const response = await fetch('/api/stock'); // Relative URL for serverless function
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setItems(data);
+        setCurrentIndex(0);
+        setLoading(false);
+    } catch (error) {
+        console.error('Error fetching stock:', error);
+        setLoading(false);
+    }
+};
+
 
         fetchStock();
     }, []); // Runs once when the component mounts
