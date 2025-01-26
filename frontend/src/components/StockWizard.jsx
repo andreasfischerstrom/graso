@@ -6,26 +6,28 @@ const StockWizard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchStock = async () => {
-            try {
-                console.log('Fetching stock items from /api/stock...');
-                const response = await fetch('/api/stock');
+const fetchStock = async () => {
+    try {
+        console.log('Fetching stock items from /api/stock...');
+        const response = await fetch('/api/stock');
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-                const data = await response.json();
-                console.log('Stock items fetched:', data);
+        const data = await response.json();
+        console.log('Fetched stock items:', data); // Debug: Log fetched data
 
-                setItems(data);
-                setCurrentIndex(0);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching stock:', error);
-                setLoading(false);
-            }
-        };
+setItems(data);
+console.log('Updated items state:', data);
+        setCurrentIndex(0); // Reset to the first item
+        setLoading(false);
+    } catch (error) {
+        console.error('Error fetching stock:', error);
+        setLoading(false);
+    }
+};
+
 
         fetchStock();
     }, []); // Runs once when the component mounts
