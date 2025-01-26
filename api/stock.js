@@ -1,12 +1,10 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
+const sqlite3 = require('sqlite3');
+const path = require('path');
 
-// Construct the path to the database file
+// Use the absolute path to the database file
 const db = new sqlite3.Database(path.join(process.cwd(), 'frontend', 'db', 'database.sqlite'));
 
-const db = new sqlite3.Database(dbPath);
-
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
     if (req.method === 'GET') {
         db.all('SELECT * FROM stock_items', [], (err, rows) => {
             if (err) {
@@ -32,4 +30,4 @@ export default function handler(req, res) {
     } else {
         res.status(405).json({ error: 'Method not allowed' });
     }
-}
+};
