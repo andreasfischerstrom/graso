@@ -1,0 +1,8 @@
+{
+    "stock_items": [
+        { "id": 1, "name": "Toilet Paper", "level": "High" },
+        { "id": 2, "name": "Dish Soap", "level": "Medium" },
+        { "id": 3, "name": "Coffee", "level": "Low" },
+        { "id": 4, "name": "Batteries", "level": "High" }
+    ]
+}
