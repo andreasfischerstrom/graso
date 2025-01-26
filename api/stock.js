@@ -1,18 +1,19 @@
-const sqlite3 = require('sqlite3');
-const path = require('path');
+import Database from 'better-sqlite3';
+import path from 'path';
 
-// Use the absolute path to the database file
-const db = new sqlite3.Database(path.join(process.cwd(), 'frontend', 'db', 'database.sqlite'));
+// Construct the database path
+const dbPath = path.join(process.cwd(), 'frontend', 'db', 'database.sqlite');
+const db = new Database(dbPath);
 
-module.exports = function handler(req, res) {
+export default function handler(req, res) {
     if (req.method === 'GET') {
-        db.all('SELECT * FROM stock_items', [], (err, rows) => {
-            if (err) {
-                res.status(500).json({ error: err.message });
-            } else {
-                res.json(rows);
-            }
-        });
+        try {
+            const rows = db.prepare('SELECT * FROM stock_items').all();
+            res.status(200).json(rows);
+        } catch (error) {
+            console.error('Error fetching stock items:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     } else if (req.method === 'POST') {
         const { id, level } = req.body;
 
@@ -20,14 +21,14 @@ module.exports = function handler(req, res) {
             return res.status(400).json({ error: 'Invalid stock level' });
         }
 
-        db.run('UPDATE stock_items SET level = ? WHERE id = ?', [level, id], function (err) {
-            if (err) {
-                res.status(500).json({ error: err.message });
-            } else {
-                res.json({ updated: this.changes });
-            }
-        });
+        try {
+            const result = db.prepare('UPDATE stock_items SET level = ? WHERE id = ?').run(level, id);
+            res.status(200).json({ updated: result.changes });
+        } catch (error) {
+            console.error('Error updating stock level:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
     } else {
         res.status(405).json({ error: 'Method not allowed' });
     }
-};
+}
