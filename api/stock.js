@@ -2,7 +2,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 
 // Construct the path to the database file
-const dbPath = path.join(process.cwd(), 'frontend', 'db', 'database.sqlite');
+const db = new sqlite3.Database(path.join(process.cwd(), 'frontend', 'db', 'database.sqlite'));
 
 const db = new sqlite3.Database(dbPath);
 
