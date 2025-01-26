@@ -1,7 +1,10 @@
 import sqlite3 from 'sqlite3';
 import path from 'path';
 
-const db = new sqlite3.Database(path.resolve('./db/database.sqlite'));
+// Construct the path to the database file
+const dbPath = path.join(process.cwd(), 'frontend', 'db', 'database.sqlite');
+
+const db = new sqlite3.Database(dbPath);
 
 export default function handler(req, res) {
     if (req.method === 'GET') {
