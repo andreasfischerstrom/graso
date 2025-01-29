@@ -10,6 +10,7 @@ export default async function handler(req, res) {
         // Fetch stock items
         const { data, error } = await supabase.from('stock_items').select('*');
         if (error) {
+            console.error('Error fetching stock:', error);
             return res.status(500).json({ error: error.message });
         }
         return res.status(200).json(data);
@@ -28,6 +29,7 @@ export default async function handler(req, res) {
             .eq('id', id);
 
         if (error) {
+            console.error('Error updating stock:', error);
             return res.status(500).json({ error: error.message });
         }
 

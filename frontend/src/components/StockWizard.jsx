@@ -6,61 +6,49 @@ const StockWizard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-const fetchStock = async () => {
-    try {
-        console.log('Fetching stock items from /api/stock...');
-        const response = await fetch('/api/stock');
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Fetched stock items:', data); // Debug: Log fetched data
-
-setItems(data);
-console.log('Updated items state:', data);
-        setCurrentIndex(0); // Reset to the first item
-        setLoading(false);
-    } catch (error) {
-        console.error('Error fetching stock:', error);
-        setLoading(false);
-    }
-};
-
+        const fetchStock = async () => {
+            try {
+                const response = await fetch('/api/stock');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                setItems(data);
+                setCurrentIndex(0);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching stock:', error);
+                setLoading(false);
+            }
+        };
 
         fetchStock();
-    }, []); // Runs once when the component mounts
+    }, []);
 
-const updateStockLevel = async (id, level) => {
-    const response = await fetch('/api/stock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, level }),
-    });
+    const updateStockLevel = async (id, level) => {
+        const response = await fetch('/api/stock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, level }),
+        });
 
-    if (!response.ok) {
-        console.error('Failed to update stock item:', await response.json());
-    }
-};
+        if (!response.ok) {
+            console.error('Failed to update stock item:', await response.json());
+            return;
+        }
 
-
-    if (loading) {
-        return <p>Loading stock items...</p>;
-    }
-
-    if (items.length === 0) {
-        return <p>No stock items found!</p>;
-    }
-
-    if (currentIndex >= items.length) {
-        return (
-            <div>
-                <p>All items updated!</p>
-                <button onClick={() => setCurrentIndex(0)}>Start Over</button>
-            </div>
+        // Update state immediately for a smoother UI experience
+        setItems((prevItems) =>
+            prevItems.map((item) => (item.id === id ? { ...item, level } : item))
         );
-    }
+
+        // Move to the next item
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+    };
+
+    if (loading) return <p>Loading stock items...</p>;
+    if (items.length === 0) return <p>No stock items found!</p>;
+    if (currentIndex >= items.length) return <p>All items updated!</p>;
 
     const currentItem = items[currentIndex];
 
@@ -68,11 +56,9 @@ const updateStockLevel = async (id, level) => {
         <div>
             <h2>Stock Wizard</h2>
             <p>Item: {currentItem.name}</p>
-            <div>
-                <button onClick={() => updateStock(currentItem.id, 'Low')}>Low</button>
-                <button onClick={() => updateStock(currentItem.id, 'Medium')}>Medium</button>
-                <button onClick={() => updateStock(currentItem.id, 'High')}>High</button>
-            </div>
+            <button onClick={() => updateStockLevel(currentItem.id, 'Low')}>Low</button>
+            <button onClick={() => updateStockLevel(currentItem.id, 'Medium')}>Medium</button>
+            <button onClick={() => updateStockLevel(currentItem.id, 'High')}>High</button>
         </div>
     );
 };

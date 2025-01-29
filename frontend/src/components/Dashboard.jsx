@@ -21,14 +21,13 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchTemperature = async () => {
             try {
-                const apiKey = 'd42250a40b92eb9485dfbeeb34d203e2'; // Replace with your OpenWeather API key
-                const lat = 60.3391; // Latitude of Öregrund
-                const lon = 18.4363; // Longitude of Öregrund
+                const apiKey = 'd42250a40b92eb9485dfbeeb34d203e2';
+                const lat = 60.3391;
+                const lon = 18.4363;
                 const response = await fetch(
                     `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`
                 );
                 const data = await response.json();
-                console.log(data);
                 setOutsideTemp(data.main.temp);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
@@ -45,6 +44,7 @@ const Dashboard = () => {
         const fetchStockItems = async () => {
             const { data, error } = await supabase.from('stock_items').select('*');
             if (error) {
+                console.error('Error fetching stock:', error);
                 setErrorStock('Failed to fetch stock data.');
             } else {
                 setStockItems(data);
@@ -66,10 +66,7 @@ const Dashboard = () => {
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
             {/* Weather Cards */}
-            <Card
-                title="Temperature Outside"
-                content={loading ? 'Fetching data...' : `${outsideTemp}°C`}
-            />
+            <Card title="Temperature Outside" content={loading ? 'Fetching data...' : `${outsideTemp}°C`} />
             <Card title="Temperature Inside" content="Fetching data..." />
             <Card title="Water Levels" content="Fetching data..." />
             <Card title="Ferry Schedule" content="Fetching data..." />
