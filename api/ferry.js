@@ -9,19 +9,37 @@ export default async function handler(req, res) {
 
     try {
         // Fetch departures from Öregrund → Gräsö
-        const responseToGraso = await fetch(`${BASE_URL}?key=${API_KEY}&id=${stops.oregrund}&direction=${stops.graso}&format=json&maxJourneys=3`);
-        const dataToGraso = await responseToGraso.json();
+        const responseToGraso = await fetch(`${BASE_URL}?key=${API_KEY}&id=${stops.oregrund}&direction=${stops.graso}&format=json&maxJourneys=3`, {
+            headers: { "Accept": "application/json" } // Force JSON response
+        });
+
+        const textToGraso = await responseToGraso.text(); // Read raw response
+        let dataToGraso;
+        try {
+            dataToGraso = JSON.parse(textToGraso);
+        } catch (error) {
+            throw new Error(`Invalid JSON response from API: ${textToGraso}`);
+        }
 
         // Fetch departures from Gräsö → Öregrund
-        const responseToOregrund = await fetch(`${BASE_URL}?key=${API_KEY}&id=${stops.graso}&direction=${stops.oregrund}&format=json&maxJourneys=3`);
-        const dataToOregrund = await responseToOregrund.json();
+        const responseToOregrund = await fetch(`${BASE_URL}?key=${API_KEY}&id=${stops.graso}&direction=${stops.oregrund}&format=json&maxJourneys=3`, {
+            headers: { "Accept": "application/json" }
+        });
+
+        const textToOregrund = await responseToOregrund.text();
+        let dataToOregrund;
+        try {
+            dataToOregrund = JSON.parse(textToOregrund);
+        } catch (error) {
+            throw new Error(`Invalid JSON response from API: ${textToOregrund}`);
+        }
 
         res.status(200).json({
             toGraso: dataToGraso.Departure || [],
             toOregrund: dataToOregrund.Departure || []
         });
     } catch (error) {
-        console.error("Error fetching ferry schedule:", error);
-        res.status(500).json({ error: "Failed to fetch ferry schedule" });
+        console.error("Error fetching ferry schedule:", error.message);
+        res.status(500).json({ error: "Failed to fetch ferry schedule", details: error.message });
     }
 }
