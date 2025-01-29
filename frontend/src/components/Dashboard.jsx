@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Card from './Card';
+import '../styles/global.css'; // Import global styles
 
 // Supabase connection
 const SUPABASE_URL = 'https://lsubvjnjdgdjvyuokubr.supabase.co';
@@ -16,11 +17,6 @@ const Dashboard = () => {
     const [stockItems, setStockItems] = useState([]);
     const [loadingStock, setLoadingStock] = useState(true);
     const [errorStock, setErrorStock] = useState(null);
-
-    // Ferry Schedule
-    const [ferryData, setFerryData] = useState(null);
-    const [loadingFerry, setLoadingFerry] = useState(true);
-    const [errorFerry, setErrorFerry] = useState(null);
 
     useEffect(() => {
         const fetchTemperature = async () => {
@@ -58,26 +54,6 @@ const Dashboard = () => {
         fetchStockItems();
     }, []);
 
-    useEffect(() => {
-        const fetchFerrySchedule = async () => {
-            try {
-                const response = await fetch('/api/ferry');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                setFerryData(data);
-            } catch (error) {
-                console.error('Error fetching ferry schedule:', error);
-                setErrorFerry('Failed to fetch ferry schedule');
-            } finally {
-                setLoadingFerry(false);
-            }
-        };
-
-        fetchFerrySchedule();
-    }, []);
-
     // Group stock items by stock level
     const groupedItems = stockItems.reduce((acc, item) => {
         const { level } = item;
@@ -87,68 +63,39 @@ const Dashboard = () => {
     }, {});
 
     return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-            {/* Weather Card */}
-            <Card title="Temperature Outside" content={loadingWeather ? 'Fetching data...' : `${outsideTemp}°C`} />
-            <Card title="Temperature Inside" content="Fetching data..." />
-            <Card title="Water Levels" content="Fetching data..." />
-            <Card title="Webcam Feed" content="Coming soon..." />
+        <div className="dashboard-container">
+            <h1 className="dashboard-title">Summer House Dashboard</h1>
+            <div className="dashboard-grid">
+                <Card title="Temperature Outside" content={loadingWeather ? 'Fetching data...' : `${outsideTemp}°C`} />
+                <Card title="Temperature Inside" content="Fetching data..." />
+                <Card title="Water Levels" content="Fetching data..." />
+                <Card title="Webcam Feed" content="Coming soon..." />
 
-            {/* Ferry Schedule Card */}
-            <Card
-                title="Ferry Schedule"
-                content={
-                    loadingFerry ? (
-                        'Fetching data...'
-                    ) : errorFerry ? (
-                        errorFerry
-                    ) : (
-                        <table style={{ width: '100%', textAlign: 'left' }}>
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>Departure</th>
-                                    <th>Destination</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[...(ferryData?.toOregrund || []), ...(ferryData?.toGraso || [])].map((ferry, index) => (
-                                    <tr key={index}>
-                                        <td>{new Date(ferry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                                        <td>{ferry.origin}</td>
-                                        <td>{ferry.destination}</td>
-                                    </tr>
+                {/* Stock Levels Card */}
+                <Card
+                    title="Stock Levels"
+                    content={
+                        loadingStock ? (
+                            'Fetching data...'
+                        ) : errorStock ? (
+                            errorStock
+                        ) : (
+                            <div>
+                                {['High', 'Medium', 'Low'].map((level) => (
+                                    <div key={level} className="stock-group">
+                                        <strong>{level} Stock Level:</strong>
+                                        <ul>
+                                            {groupedItems[level]?.map((item) => (
+                                                <li key={item.id}>{item.name}</li>
+                                            )) || <li>No items</li>}
+                                        </ul>
+                                    </div>
                                 ))}
-                            </tbody>
-                        </table>
-                    )
-                }
-            />
-
-            {/* Stock Levels Card */}
-            <Card
-                title="Stock Levels"
-                content={
-                    loadingStock ? (
-                        'Fetching data...'
-                    ) : errorStock ? (
-                        errorStock
-                    ) : (
-                        <div>
-                            {['High', 'Medium', 'Low'].map((level) => (
-                                <div key={level} style={{ marginBottom: '8px' }}>
-                                    <strong>{level} Stock Level:</strong>
-                                    <ul>
-                                        {groupedItems[level]?.map((item) => (
-                                            <li key={item.id}>{item.name}</li>
-                                        )) || <li>No items</li>}
-                                    </ul>
-                                </div>
-                            ))}
-                        </div>
-                    )
-                }
-            />
+                            </div>
+                        )
+                    }
+                />
+            </div>
         </div>
     );
 };
