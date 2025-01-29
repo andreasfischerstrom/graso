@@ -32,23 +32,18 @@ console.log('Updated items state:', data);
         fetchStock();
     }, []); // Runs once when the component mounts
 
-    const updateStock = async (id, level) => {
-        try {
-            console.log(`Updating stock for item ${id} to level ${level}...`);
-            await fetch(`/api/stock/${id}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ level }),
-            });
+const updateStockLevel = async (id, level) => {
+    const response = await fetch('/api/stock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, level }),
+    });
 
-            // Move to the next item
-            setCurrentIndex((prevIndex) => prevIndex + 1);
-        } catch (error) {
-            console.error('Error updating stock:', error);
-        }
-    };
+    if (!response.ok) {
+        console.error('Failed to update stock item:', await response.json());
+    }
+};
+
 
     if (loading) {
         return <p>Loading stock items...</p>;

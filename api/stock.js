@@ -1,58 +1,38 @@
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-const dbPath = path.join(process.cwd(), 'frontend', 'db', 'db.json');
+const SUPABASE_URL = 'https://lsubvjnjdgdjvyuokubr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzdWJ2am5qZGdkanZ5dW9rdWJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgxMzU3ODQsImV4cCI6MjA1MzcxMTc4NH0.gmA9k4jWm49vcTOYp-YxIsH62nzr7l7zqak77ensYN0';
 
-export default function handler(req, res) {
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+export default async function handler(req, res) {
     if (req.method === 'GET') {
-        // Read the JSON file and return the stock items
-        fs.readFile(dbPath, 'utf8', (err, data) => {
-            if (err) {
-                console.error('Error reading database:', err);
-                res.status(500).json({ error: 'Internal Server Error' });
-                return;
-            }
-
-            const db = JSON.parse(data);
-            res.status(200).json(db.stock_items);
-        });
+        // Fetch stock items
+        const { data, error } = await supabase.from('stock_items').select('*');
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+        return res.status(200).json(data);
     } else if (req.method === 'POST') {
-        // Update a stock item's level
         const { id, level } = req.body;
 
+        // Validate input
         if (!['Low', 'Medium', 'High'].includes(level)) {
-            res.status(400).json({ error: 'Invalid stock level' });
-            return;
+            return res.status(400).json({ error: 'Invalid stock level' });
         }
 
-        fs.readFile(dbPath, 'utf8', (err, data) => {
-            if (err) {
-                console.error('Error reading database:', err);
-                res.status(500).json({ error: 'Internal Server Error' });
-                return;
-            }
+        // Update stock item
+        const { error } = await supabase
+            .from('stock_items')
+            .update({ level })
+            .eq('id', id);
 
-            const db = JSON.parse(data);
-            const item = db.stock_items.find((item) => item.id === id);
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
 
-            if (!item) {
-                res.status(404).json({ error: 'Stock item not found' });
-                return;
-            }
-
-            item.level = level;
-
-            fs.writeFile(dbPath, JSON.stringify(db, null, 2), (err) => {
-                if (err) {
-                    console.error('Error writing to database:', err);
-                    res.status(500).json({ error: 'Internal Server Error' });
-                    return;
-                }
-
-                res.status(200).json({ updated: true });
-            });
-        });
+        return res.status(200).json({ message: 'Stock item updated' });
     } else {
-        res.status(405).json({ error: 'Method not allowed' });
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 }
