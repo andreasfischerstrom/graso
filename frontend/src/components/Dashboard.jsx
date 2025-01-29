@@ -10,7 +10,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const Dashboard = () => {
     // Weather state
     const [outsideTemp, setOutsideTemp] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loadingWeather, setLoadingWeather] = useState(true);
+
+    // Stock data state
+    const [stockItems, setStockItems] = useState([]);
+    const [loadingStock, setLoadingStock] = useState(true);
+    const [errorStock, setErrorStock] = useState(null);
 
     // Ferry Schedule
     const [ferryData, setFerryData] = useState(null);
@@ -31,11 +36,26 @@ const Dashboard = () => {
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             } finally {
-                setLoading(false);
+                setLoadingWeather(false);
             }
         };
 
         fetchTemperature();
+    }, []);
+
+    useEffect(() => {
+        const fetchStockItems = async () => {
+            const { data, error } = await supabase.from('stock_items').select('*');
+            if (error) {
+                console.error('Error fetching stock:', error);
+                setErrorStock('Failed to fetch stock data.');
+            } else {
+                setStockItems(data);
+            }
+            setLoadingStock(false);
+        };
+
+        fetchStockItems();
     }, []);
 
     useEffect(() => {
@@ -58,10 +78,18 @@ const Dashboard = () => {
         fetchFerrySchedule();
     }, []);
 
+    // Group stock items by stock level
+    const groupedItems = stockItems.reduce((acc, item) => {
+        const { level } = item;
+        if (!acc[level]) acc[level] = [];
+        acc[level].push(item);
+        return acc;
+    }, {});
+
     return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-            {/* Weather Cards */}
-            <Card title="Temperature Outside" content={loading ? 'Fetching data...' : `${outsideTemp}°C`} />
+            {/* Weather Card */}
+            <Card title="Temperature Outside" content={loadingWeather ? 'Fetching data...' : `${outsideTemp}°C`} />
             <Card title="Temperature Inside" content="Fetching data..." />
             <Card title="Water Levels" content="Fetching data..." />
             <Card title="Webcam Feed" content="Coming soon..." />
@@ -93,6 +121,31 @@ const Dashboard = () => {
                                 ))}
                             </tbody>
                         </table>
+                    )
+                }
+            />
+
+            {/* Stock Levels Card */}
+            <Card
+                title="Stock Levels"
+                content={
+                    loadingStock ? (
+                        'Fetching data...'
+                    ) : errorStock ? (
+                        errorStock
+                    ) : (
+                        <div>
+                            {['High', 'Medium', 'Low'].map((level) => (
+                                <div key={level} style={{ marginBottom: '8px' }}>
+                                    <strong>{level} Stock Level:</strong>
+                                    <ul>
+                                        {groupedItems[level]?.map((item) => (
+                                            <li key={item.id}>{item.name}</li>
+                                        )) || <li>No items</li>}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
                     )
                 }
             />
