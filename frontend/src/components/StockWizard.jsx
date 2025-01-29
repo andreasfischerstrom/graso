@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const StockWizard = () => {
     const [items, setItems] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // Initialize navigation hook
 
     useEffect(() => {
         const fetchStock = async () => {
@@ -31,7 +33,7 @@ const StockWizard = () => {
     }, []);
 
     const updateStockLevel = async (id, level) => {
-        console.log(`Updating stock item ${id} to ${level}`); // Debugging log
+        console.log(`Updating stock item ${id} to ${level}`);
 
         const response = await fetch('/api/stock', {
             method: 'POST',
@@ -44,7 +46,7 @@ const StockWizard = () => {
             return;
         }
 
-        console.log(`Stock item ${id} updated successfully!`); // Debugging log
+        console.log(`Stock item ${id} updated successfully!`);
 
         // Update local state immediately
         setItems((prevItems) =>
@@ -64,7 +66,8 @@ const StockWizard = () => {
         return (
             <div>
                 <p>All items updated!</p>
-                <button onClick={() => setCurrentIndex(0)}>Start Over</button>
+                {/* Button navigates back to the Dashboard */}
+                <button onClick={() => navigate('/')}>Go to Dashboard</button>
             </div>
         );
     }
@@ -74,7 +77,8 @@ const StockWizard = () => {
     return (
         <div>
             <h2>Stock Wizard</h2>
-            <p>Item: {currentItem.name}</p>
+            <p><strong>Item:</strong> {currentItem.name}</p>
+            <p><strong>Current Stock Level:</strong> {currentItem.level}</p> {/* Show current level */}
             <div>
                 <button onClick={() => updateStockLevel(currentItem.id, 'Low')}>Low</button>
                 <button onClick={() => updateStockLevel(currentItem.id, 'Medium')}>Medium</button>
