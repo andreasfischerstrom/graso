@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Card from './Card';
-import '../styles/global.css'; // Import global styles
+import '../styles/global.css';
 
 // Supabase connection
 const SUPABASE_URL = 'https://lsubvjnjdgdjvyuokubr.supabase.co';
