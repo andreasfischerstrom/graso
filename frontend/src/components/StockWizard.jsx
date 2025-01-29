@@ -8,11 +8,16 @@ const StockWizard = () => {
     useEffect(() => {
         const fetchStock = async () => {
             try {
+                console.log('Fetching stock items from /api/stock...');
                 const response = await fetch('/api/stock');
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
+
                 const data = await response.json();
+                console.log('Fetched stock items:', data);
+
                 setItems(data);
                 setCurrentIndex(0);
                 setLoading(false);
@@ -26,6 +31,8 @@ const StockWizard = () => {
     }, []);
 
     const updateStockLevel = async (id, level) => {
+        console.log(`Updating stock item ${id} to ${level}`); // Debugging log
+
         const response = await fetch('/api/stock', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -37,9 +44,13 @@ const StockWizard = () => {
             return;
         }
 
-        // Update state immediately for a smoother UI experience
+        console.log(`Stock item ${id} updated successfully!`); // Debugging log
+
+        // Update local state immediately
         setItems((prevItems) =>
-            prevItems.map((item) => (item.id === id ? { ...item, level } : item))
+            prevItems.map((item) =>
+                item.id === id ? { ...item, level } : item
+            )
         );
 
         // Move to the next item
@@ -48,7 +59,15 @@ const StockWizard = () => {
 
     if (loading) return <p>Loading stock items...</p>;
     if (items.length === 0) return <p>No stock items found!</p>;
-    if (currentIndex >= items.length) return <p>All items updated!</p>;
+    
+    if (currentIndex >= items.length) {
+        return (
+            <div>
+                <p>All items updated!</p>
+                <button onClick={() => setCurrentIndex(0)}>Start Over</button>
+            </div>
+        );
+    }
 
     const currentItem = items[currentIndex];
 
@@ -56,9 +75,11 @@ const StockWizard = () => {
         <div>
             <h2>Stock Wizard</h2>
             <p>Item: {currentItem.name}</p>
-            <button onClick={() => updateStockLevel(currentItem.id, 'Low')}>Low</button>
-            <button onClick={() => updateStockLevel(currentItem.id, 'Medium')}>Medium</button>
-            <button onClick={() => updateStockLevel(currentItem.id, 'High')}>High</button>
+            <div>
+                <button onClick={() => updateStockLevel(currentItem.id, 'Low')}>Low</button>
+                <button onClick={() => updateStockLevel(currentItem.id, 'Medium')}>Medium</button>
+                <button onClick={() => updateStockLevel(currentItem.id, 'High')}>High</button>
+            </div>
         </div>
     );
 };
