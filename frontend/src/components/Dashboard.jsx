@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Card from './Card';
-import '../styles/global.css';
+import '../styles/global.css'; // Global styles
+import '../styles/dashboard.css'; // New dashboard styles
 
 // Supabase connection
 const SUPABASE_URL = 'https://lsubvjnjdgdjvyuokubr.supabase.co';
@@ -9,11 +10,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const Dashboard = () => {
-    // Weather state
     const [outsideTemp, setOutsideTemp] = useState(null);
     const [loadingWeather, setLoadingWeather] = useState(true);
-
-    // Stock data state
     const [stockItems, setStockItems] = useState([]);
     const [loadingStock, setLoadingStock] = useState(true);
     const [errorStock, setErrorStock] = useState(null);
@@ -64,35 +62,47 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
-            <h1 className="dashboard-title">Summer House Dashboard</h1>
+            <h1 className="dashboard-title">God eftermiddag</h1>
             <div className="dashboard-grid">
-                <Card title="Temperature Outside" content={loadingWeather ? 'Fetching data...' : `${outsideTemp}°C`} />
-                <Card title="Temperature Inside" content="Fetching data..." />
-                <Card title="Water Levels" content="Fetching data..." />
-                <Card title="Webcam Feed" content="Coming soon..." />
-
-                {/* Stock Levels Card */}
-                <Card
-                    title="Stock Levels"
+                <Card title="🌡️ Temperatur" content={loadingWeather ? 'Laddar...' : `+${outsideTemp}°C`} subtitle="Inomhus" />
+                <Card title="🌡️ Temperatur" content="-2°C" subtitle="Utomhus" />
+                <Card title="🌊 Vattennivå" content="23 cm" subtitle="21 januari" />
+                <Card title="📹 Webbkamera" content={<span className="webcam-placeholder">▶</span>} />
+                <Card 
+                    title="⛴️ Färjetabell" 
                     content={
-                        loadingStock ? (
-                            'Fetching data...'
-                        ) : errorStock ? (
-                            errorStock
-                        ) : (
-                            <div>
-                                {['High', 'Medium', 'Low'].map((level) => (
-                                    <div key={level} className="stock-group">
-                                        <strong>{level} Stock Level:</strong>
-                                        <ul>
-                                            {groupedItems[level]?.map((item) => (
-                                                <li key={item.id}>{item.name}</li>
-                                            )) || <li>No items</li>}
-                                        </ul>
-                                    </div>
-                                ))}
+                        <table className="ferry-table">
+                            <thead>
+                                <tr>
+                                    <th>Öregrund</th>
+                                    <th>Gräsö</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>12:00</td><td>12:07</td></tr>
+                                <tr><td>12:30</td><td>12:37</td></tr>
+                                <tr><td>13:00</td><td>13:07</td></tr>
+                            </tbody>
+                        </table>
+                    } 
+                />
+                <Card 
+                    title="📦 Lagerstatus"
+                    content={
+                        <div className="stock-container">
+                            <div className="stock-group high">
+                                <strong>Finns mycket</strong>
+                                <ul>{groupedItems['High']?.map(item => <li key={item.id}>{item.name}</li>) || <li>Inget</li>}</ul>
                             </div>
-                        )
+                            <div className="stock-group medium">
+                                <strong>Finns delvis</strong>
+                                <ul>{groupedItems['Medium']?.map(item => <li key={item.id}>{item.name}</li>) || <li>Inget</li>}</ul>
+                            </div>
+                            <div className="stock-group low">
+                                <strong>Finns lite</strong>
+                                <ul>{groupedItems['Low']?.map(item => <li key={item.id}>{item.name}</li>) || <li>Inget</li>}</ul>
+                            </div>
+                        </div>
                     }
                 />
             </div>
