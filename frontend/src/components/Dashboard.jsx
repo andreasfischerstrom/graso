@@ -64,12 +64,12 @@ const Dashboard = () => {
         <div className="dashboard-container">
             <h1 className="dashboard-title">God eftermiddag</h1>
             <div className="dashboard-grid">
-                <Card title="🌡️ Temperatur" content={loadingWeather ? 'Laddar...' : `+${outsideTemp}°C`} subtitle="Inomhus" />
-                <Card title="🌡️ Temperatur" content="-2°C" subtitle="Utomhus" />
-                <Card title="🌊 Vattennivå" content="23 cm" subtitle="21 januari" />
-                <Card title="📹 Webbkamera" content={<span className="webcam-placeholder">▶</span>} />
+                <Card title="Temperatur" content={loadingWeather ? 'Laddar...' : `+${outsideTemp}°C`} subtitle="Inomhus" />
+                <Card title="Temperatur" content="-2°C" subtitle="Utomhus" />
+                <Card title="Vattennivå" content="23 cm" subtitle="21 januari" />
+                <Card title="Webbkamera" content={<span className="webcam-placeholder">▶</span>} />
                 <Card 
-                    title="⛴️ Färjetabell" 
+                    title="Färjetabell" 
                     content={
                         <table className="ferry-table">
                             <thead>
@@ -87,7 +87,7 @@ const Dashboard = () => {
                     } 
                 />
                 <Card 
-                    title="📦 Lagerstatus"
+                    title="Lagerstatus"
                     content={
                         <div className="stock-container">
                             <div className="stock-group high">

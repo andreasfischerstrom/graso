@@ -10,7 +10,7 @@ const App = () => {
     <Router>
       <div style={{ display: 'flex', height: '100vh', fontFamily: 'Arial, sans-serif' }}>
         {/* Sidebar */}
-        <div style={{ width: '250px', background: '#1e1e1e', color: 'white', padding: '20px' }}>
+        <div style={{ width: '250px', background: 'rgba(255,255,255,0.1)', color: 'white', padding: '20px' }}>
           <h2>Gräsö</h2>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li style={{ marginBottom: '10px' }}>
@@ -26,7 +26,7 @@ const App = () => {
         </div>
 
         {/* Main Content */}
-        <div style={{ flex: 1, padding: '20px', background: '#f0f2f5' }}>
+        <div style={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/stock" element={<StockWizard />} />
